@@ -4,6 +4,7 @@ using System.Text;
 
 namespace PeterLauncher.Core
 {
+    /// <summary>线程安全的文件日志。</summary>
     public static class Log
     {
         private static readonly object Gate = new object();
@@ -22,6 +23,7 @@ namespace PeterLauncher.Core
                 + Environment.NewLine + ex.StackTrace);
         }
 
+        /// <summary>写入任意级别文本（未捕获异常时用，内容里带完整堆栈）。</summary>
         public static void Message(string level, string text) { Write(level, text); }
 
         private static void Write(string level, string message)
@@ -38,6 +40,7 @@ namespace PeterLauncher.Core
             }
         }
 
+        /// <summary>读取日志尾部若干行。</summary>
         public static string Tail(int maxLines)
         {
             try
