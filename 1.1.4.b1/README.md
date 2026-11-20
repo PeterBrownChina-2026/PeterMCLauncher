@@ -6,7 +6,7 @@
 - 作者：Peter Brown
 - 目标平台：Windows 7 SP1 / 8.1 / 10 / 11（32 位与 64 位系统都能跑）
 - 1.16.5 上实测通过；1.17 及以后的标准版本 JSON 走同一套逻辑，`inheritsFrom`（Forge / Fabric / OptiFine）也做了合并
-- 1.1.4.b1 起界面切换为 Win32 经典控制面板风格（灰底白卡、Tahoma、直角凹陷边框），功能与 1.1.3 一致
+- 1.1.4.b1 起界面切换为 Win32 经典控制面板风格（纯白背景、系统原生标题栏、灰色单线边框、Tahoma、全部直角），功能与 1.1.3 一致
 
 ## 功能
 
@@ -72,6 +72,15 @@ build.bat
 
 脚本会自动找 `%WINDIR%\Microsoft.NET\Framework64\v4.0.30319\csc.exe`（找不到就用 32 位的），产物在 `dist\PeterMinecraftLauncher.exe`。
 
+也可以手动编译：
+
+```bat
+"%WINDIR%\Microsoft.NET\Framework64\v4.0.30319\csc.exe" /target:winexe /optimize+ ^
+  /out:"dist\PeterMinecraftLauncher.exe" /win32icon:"assets\icon.ico" ^
+  /r:System.dll /r:System.Core.dll /r:System.Drawing.dll /r:System.Windows.Forms.dll ^
+  /recurse:src\*.cs
+```
+
 > 说明：csc 不会生成 Win32 版本资源块，所以资源管理器「属性 → 详细信息」里看不到文件版本；启动器界面内显示的是 1.1.4.b1。
 
 ## 配置项（config.ini）
@@ -125,7 +134,7 @@ src\
    ├─ Theme.cs           Win32 经典配色、字体、直角绘制
    ├─ Widgets.cs         自绘按钮 / 卡片 / 滑块 / 输入框 / 进度条（Win32 风格）
    ├─ Pages.cs           六个页面（启动、账户、Java、设置、日志、关于）
-   └─ MainForm.cs        无边框窗口、拖拽、导航、异步任务编排
+   └─ MainForm.cs        原生 Win32 边框、左侧导航、异步任务编排
 ```
 
 ## 已知限制
@@ -134,6 +143,25 @@ src\
 - Temurin 没有 Windows 版 JRE 16，1.17 一律按 Java 17 处理。
 - 版本清单要求 Java 8、本机却只有更高版本时只提示、不硬拦（1.16 用 Java 17 会崩，这个提示会写明）。
 - 微软登录依赖微软公开接口，接口或策略调整时可能失效。
+
+## 已验证 / 未验证
+
+实测过的部分（1.1.1）：
+
+- 自动下载 Java：从清华镜像取 `OpenJDK17U-jre_x64_windows_hotspot_17.0.21_9.zip`，**9 秒**下载完并解压到 `Java\jre17`，探测到 `17.0.21（64 位）`。
+- 版本需求判断：1.16.5 → Java 8（读的是清单里的 `javaVersion`），1.17 → 17，1.18.2 / 1.20.4 → 17，1.21 → 21。
+- 重新拼装的启动链路：真实 1.16.5（`versions\1.16.5` 完整 + `libraries` + `assets` + Temurin JRE 1.8.0_512）启动，**14 秒**出现游戏窗口。
+- 界面：启动页显示「1.8.0_512 64 位（匹配 Java 8）」，Java 页显示「1.16.5 需要 Java 8，已经匹配」。
+- 首次释放：从 `data\.minecraft` 复制 980MB，95 秒完成并写 `.pmcl_release`。
+
+**没有实测的部分**（交付时请自己确认）：
+
+- 微软正版登录整条链路（微软账户 → Xbox Live → XSTS → Minecraft）。我没有购买了 Java 版的微软账户可用，
+  Azure 应用客户端 ID 也需要你自己注册。
+- `inheritsFrom` 合并（Forge / Fabric / OptiFine）：代码已实现（父版本向上递归合并 mainClass / libraries / arguments / assetIndex / jar / javaVersion），
+  但我手上没有 Forge 实例，只验证了原版清单这条路径正常。
+- 1.17 及以后版本的完整启动（本地只有 1.16.5 的游戏文件，没有 1.18 / 1.21 的 libraries 与 assets）。
+
 
 ## 更新日志
 
