@@ -98,10 +98,10 @@ namespace PeterLauncher.Core
 
             candidates.Add(Path.Combine(AppInfo.PortableTarget, "bin", "java.exe"));
             candidates.Add(Path.Combine(AppInfo.PortableSource, "bin", "java.exe"));
-            // 启动器自己下载的 JRE 都放在 Java\jre{主版本} 下
+            // 启动器自己下载的 JRE 都放在 Java\\jre{主版本} 下
             AddFolders(candidates, AppInfo.JavaRoot, "jre*");
             AddFolders(candidates, AppInfo.JavaRoot, "jdk*");
-            // 1.1.2 起兼容 JRE\ 目录名（用户可能把便携 JRE 放在 JRE 而非 Java）
+            // 1.1.2 起兼容 JRE\\ 目录名（用户可能把便携 JRE 放在 JRE 而非 Java）
             AddFolders(candidates, AppInfo.JreRoot, "jre*");
             AddFolders(candidates, AppInfo.JreRoot, "jdk*");
 
@@ -144,7 +144,7 @@ namespace PeterLauncher.Core
                 try
                 {
                     string full = Path.GetFullPath(candidate);
-                    // Common Files\Oracle\Java\javapath\java.exe 是个转发壳子，跑 -version 不出东西，跳过
+                    // Common Files\\Oracle\\Java\\javapath\\java.exe 是个转发壳子，跑 -version 不出东西，跳过
                     if (full.ToLowerInvariant().Contains("\\javapath\\java.exe")) continue;
                     bool duplicated = false;
                     foreach (JavaInfo existing in result)
@@ -269,7 +269,7 @@ namespace PeterLauncher.Core
 
         // ------------------------------------------------------------------
         // 说明：1.1.1 起不再调起 Oracle 安装包 / 复制便携 JRE，
-        // 改由 JavaProvisioner 按游戏版本从镜像站下载 Temurin JRE 到 Java\jre{主版本}。
+        // 改由 JavaProvisioner 按游戏版本从镜像站下载 Temurin JRE 到 Java\\jre{主版本}。
         // ------------------------------------------------------------------
 
         /// <summary>把系统上已有的 Java 注册进 config（供未来扩展使用）。</summary>
