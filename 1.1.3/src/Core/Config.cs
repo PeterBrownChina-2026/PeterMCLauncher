@@ -5,6 +5,7 @@ using System.Text;
 
 namespace PeterLauncher.Core
 {
+    /// <summary>产品常量与便携目录约定。启动器所有文件都在 exe 所在目录下，方便塞在 U 盘里带走。</summary>
     public static class AppInfo
     {
         public const string Name = "Peter Minecraft launcher";
@@ -12,6 +13,7 @@ namespace PeterLauncher.Core
         public const string Author = "Peter Brown";
         public const string GameVersionDefault = "1.16.5";
 
+        /// <summary>exe 所在目录（不带结尾反斜杠）。</summary>
         public static string Directory
         {
             get
@@ -34,6 +36,9 @@ namespace PeterLauncher.Core
         public static string ChangeLogFile { get { return Path.Combine(Directory, "更新日志.txt"); } }
     }
 
+    /// <summary>
+    /// config.ini 读写。键名向后兼容旧版批处理启动器（username / maxmem 直接沿用）。
+    /// </summary>
     public class Config
     {
         public string UserName = "Player";
@@ -135,6 +140,7 @@ namespace PeterLauncher.Core
             }
         }
 
+        /// <summary>把 "2G" / "2048M" / "2048" 解析成 MB。</summary>
         public static int ParseMemory(string text, int fallbackMb)
         {
             if (text == null) return fallbackMb;

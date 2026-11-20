@@ -6,6 +6,7 @@ using System.Text;
 
 namespace PeterLauncher.Core
 {
+    /// <summary>HTTP 请求失败（带状态码与响应体，方便解析 XSTS 的 XErr）。</summary>
     public class HttpError : Exception
     {
         public int StatusCode;
@@ -18,6 +19,7 @@ namespace PeterLauncher.Core
         }
     }
 
+    /// <summary>极简 HTTP 客户端：只做本启动器需要的 POST/GET，不引入第三方库。</summary>
     public static class Http
     {
         private static bool tlsReady = false;
@@ -28,8 +30,8 @@ namespace PeterLauncher.Core
             tlsReady = true;
             try
             {
-                int protocols = 768 | 3072;
-                try { protocols |= 12288; } catch { }
+                int protocols = 768 | 3072; // TLS1.0 | TLS1.2
+                try { protocols |= 12288; } catch { } // TLS1.3（老系统上可能不存在）
                 ServicePointManager.SecurityProtocol = (SecurityProtocolType)protocols;
             }
             catch (Exception ex) { Log.Warn("设置 TLS 协议失败：" + ex.Message); }
@@ -50,6 +52,7 @@ namespace PeterLauncher.Core
             return Send("GET", url, null, null, headers);
         }
 
+        /// <summary>下载文件到本地，progress(总长度, 已下载)；总长度未知时为 -1。</summary>
         public static bool DownloadFile(string url, string targetPath, Action<long, long> progress, out string error)
         {
             error = "";
