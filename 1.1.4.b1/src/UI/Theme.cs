@@ -7,25 +7,24 @@ using System.Windows.Forms;
 namespace PeterLauncher.UI
 {
     /// <summary>
-    /// 配色、字体与绘制工具。1.1.4.b1 起走 Win32 经典控制面板风格：
-    /// 系统灰底、白卡片、黑字、经典蓝高亮、直角凹陷边框，Tahoma 字体。
+    /// 配色、字体与绘制工具。1.1.4.b1：纯白背景 + 方正直角边框风格。
     /// </summary>
     public static class Theme
     {
-        // ---- Win32 经典配色（对应 Windows Classic / 控制面板） ----
-        public static readonly Color Background = Color.FromArgb(240, 240, 240);   // 系统按钮灰
-        public static readonly Color Sidebar = Color.FromArgb(240, 240, 240);
-        public static readonly Color TitleBar = Color.FromArgb(240, 240, 240);
-        public static readonly Color Card = Color.FromArgb(255, 255, 255);           // 白卡片
-        public static readonly Color CardHover = Color.FromArgb(229, 243, 251);     // 浅蓝 hover
-        public static readonly Color Field = Color.FromArgb(255, 255, 255);          // 输入框白底
-        public static readonly Color Border = Color.FromArgb(128, 128, 128);         // 中灰边框
-        public static readonly Color Text = Color.FromArgb(0, 0, 0);                 // 黑字
-        public static readonly Color TextDim = Color.FromArgb(96, 96, 96);             // 深灰次级文字
-        public static readonly Color Accent = Color.FromArgb(10, 36, 106);           // 经典深蓝（Win32 高亮）
+        // ---- 纯白 + 方正边框风格 ----
+        public static readonly Color Background = Color.FromArgb(255, 255, 255);
+        public static readonly Color Sidebar = Color.FromArgb(255, 255, 255);
+        public static readonly Color TitleBar = Color.FromArgb(255, 255, 255);
+        public static readonly Color Card = Color.FromArgb(255, 255, 255);
+        public static readonly Color CardHover = Color.FromArgb(235, 244, 252);
+        public static readonly Color Field = Color.FromArgb(255, 255, 255);
+        public static readonly Color Border = Color.FromArgb(128, 128, 128);
+        public static readonly Color Text = Color.FromArgb(0, 0, 0);
+        public static readonly Color TextDim = Color.FromArgb(96, 96, 96);
+        public static readonly Color Accent = Color.FromArgb(10, 36, 106);
         public static readonly Color AccentHover = Color.FromArgb(16, 66, 165);
         public static readonly Color AccentDown = Color.FromArgb(8, 28, 80);
-        public static readonly Color Highlight = Color.FromArgb(49, 106, 197);        // 选中项蓝
+        public static readonly Color Highlight = Color.FromArgb(49, 106, 197);
         public static readonly Color Danger = Color.FromArgb(192, 0, 0);
         public static readonly Color Warning = Color.FromArgb(180, 95, 0);
 
@@ -43,7 +42,6 @@ namespace PeterLauncher.UI
 
         private static string PickFontFamily()
         {
-            // Win32 经典界面优先 Tahoma；其次系统消息框字体；最后退回雅黑
             string[] candidates = new string[] { "Tahoma", "MS Sans Serif", "Microsoft Sans Serif", "Segoe UI", "Microsoft YaHei UI" };
             try
             {
@@ -58,7 +56,6 @@ namespace PeterLauncher.UI
             return SystemFonts.MessageBoxFont.FontFamily.Name;
         }
 
-        /// <summary>1.1.4.b1：Win32 风格全部直角，圆角强制为 0。</summary>
         public static GraphicsPath RoundRect(Rectangle bounds, int radius)
         {
             GraphicsPath path = new GraphicsPath();
@@ -78,7 +75,6 @@ namespace PeterLauncher.UI
                 g.DrawRectangle(pen, bounds.X, bounds.Y, bounds.Width - 1, bounds.Height - 1);
         }
 
-        /// <summary>Win32 风格按钮凸起边框：左上高亮白、右下阴影灰。</summary>
         public static void DrawRaisedBorder(Graphics g, Rectangle rect)
         {
             Color light = Color.FromArgb(255, 255, 255);
@@ -93,7 +89,6 @@ namespace PeterLauncher.UI
             }
         }
 
-        /// <summary>Win32 风格输入框凹陷边框：左上深灰、右下白。</summary>
         public static void DrawSunkenBorder(Graphics g, Rectangle rect)
         {
             Color light = Color.FromArgb(255, 255, 255);
@@ -112,7 +107,6 @@ namespace PeterLauncher.UI
             }
         }
 
-        /// <summary>垂直渐变圆角块——Win32 风格下不渐变，直接填底色。</summary>
         public static void FillRoundGradient(Graphics g, Rectangle bounds, int radius, Color top, Color bottom)
         {
             using (SolidBrush brush = new SolidBrush(top))
@@ -121,7 +115,6 @@ namespace PeterLauncher.UI
 
         public static void EnableSmoothing(Graphics g)
         {
-            // Win32 经典风格不要抗锯齿，像素感更对味
             g.SmoothingMode = SmoothingMode.None;
             g.TextRenderingHint = TextRenderingHint.SystemDefault;
             g.InterpolationMode = InterpolationMode.Low;
