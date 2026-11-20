@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace PeterLauncher.UI
 {
-    /// <summary>Win32 经典风格按钮：灰底、凸起边框、Primary 用粗体。</summary>
+    /// <summary>Win32 风格按钮：白底灰边框，按下凹陷。</summary>
     public class UiButton : Control
     {
         public bool Primary = true;
@@ -40,19 +40,19 @@ namespace PeterLauncher.UI
 
             Color fill = Theme.Background;
             if (!Enabled) fill = Color.FromArgb(224, 224, 224);
-            else if (pressed) fill = Color.FromArgb(204, 204, 204);
-            else if (hovered) fill = Color.FromArgb(229, 243, 251);
+            else if (pressed) fill = Color.FromArgb(220, 220, 220);
+            else if (hovered) fill = Color.FromArgb(235, 244, 252);
 
             using (SolidBrush brush = new SolidBrush(fill))
                 g.FillRectangle(brush, rect);
 
-            if (pressed) Theme.DrawSunkenBorder(g, rect);
-            else Theme.DrawRaisedBorder(g, rect);
+            using (Pen pen = new Pen(Theme.Border, 1f))
+                g.DrawRectangle(pen, rect.X, rect.Y, rect.Width, rect.Height);
 
-            if (Primary && Enabled && !pressed)
+            if (pressed)
             {
-                using (Pen pen = new Pen(Color.FromArgb(64, 64, 64), 1f))
-                    g.DrawRectangle(pen, rect.Left + 2, rect.Top + 2, rect.Width - 5, rect.Height - 5);
+                using (Pen p2 = new Pen(Color.FromArgb(160, 160, 160)))
+                    g.DrawLine(p2, rect.Left + 1, rect.Bottom - 1, rect.Right - 1, rect.Bottom - 1);
             }
 
             Font textFont = Primary ? Theme.Font(9f, true) : Font;
@@ -65,7 +65,6 @@ namespace PeterLauncher.UI
     public class CardPanel : Panel
     {
         public string Title = "";
-        public int Radius = 0;
         private int titleHeight = 0;
 
         public CardPanel()
@@ -90,7 +89,8 @@ namespace PeterLauncher.UI
             Rectangle bounds = new Rectangle(0, 0, Width - 1, Height - 1);
             using (SolidBrush brush = new SolidBrush(Theme.Card))
                 g.FillRectangle(brush, bounds);
-            Theme.DrawSunkenBorder(g, bounds);
+            using (Pen pen = new Pen(Theme.Border, 1f))
+                g.DrawRectangle(pen, bounds.X, bounds.Y, bounds.Width, bounds.Height);
 
             if (!string.IsNullOrEmpty(Title))
             {
@@ -103,7 +103,7 @@ namespace PeterLauncher.UI
         public int TitleHeight { get { return titleHeight; } }
     }
 
-    /// <summary>左侧导航项：灰底，选中蓝底白字。</summary>
+    /// <summary>左侧导航项：白底，选中蓝底白字。</summary>
     public class NavButton : Control
     {
         private bool hovered;
@@ -115,7 +115,7 @@ namespace PeterLauncher.UI
                    | ControlStyles.OptimizedDoubleBuffer | ControlStyles.ResizeRedraw, true);
             Cursor = Cursors.Hand;
             Font = Theme.Font(9f, false);
-            Height = 28;
+            Height = 40;
         }
 
         protected override void OnMouseEnter(EventArgs e) { hovered = true; Invalidate(); base.OnMouseEnter(e); }
@@ -148,11 +148,10 @@ namespace PeterLauncher.UI
         }
     }
 
-    /// <summary>白底输入框，凹陷边框。</summary>
+    /// <summary>白底输入框，灰色边框。</summary>
     public class TextField : Control
     {
         private readonly TextBox box;
-        private bool focused;
         public event EventHandler TextValueChanged;
 
         public TextField()
@@ -166,8 +165,6 @@ namespace PeterLauncher.UI
             box.BackColor = Theme.Field;
             box.ForeColor = Theme.Text;
             box.Font = Theme.BodyFont;
-            box.GotFocus += delegate { focused = true; Invalidate(); };
-            box.LostFocus += delegate { focused = false; Invalidate(); };
             box.TextChanged += delegate { if (TextValueChanged != null) TextValueChanged(this, EventArgs.Empty); };
             Controls.Add(box);
             Height = 22;
@@ -198,17 +195,17 @@ namespace PeterLauncher.UI
             Rectangle rect = new Rectangle(0, 0, Width - 1, Height - 1);
             using (SolidBrush brush = new SolidBrush(Theme.Field))
                 g.FillRectangle(brush, rect);
-            Theme.DrawSunkenBorder(g, rect);
+            using (Pen pen = new Pen(Theme.Border, 1f))
+                g.DrawRectangle(pen, rect.X, rect.Y, rect.Width, rect.Height);
             base.OnPaint(e);
         }
     }
 
-    /// <summary>Win32 风格下拉框：白底、凹陷边框、经典箭头。</summary>
+    /// <summary>白底下拉框。</summary>
     public class UiSelect : Control
     {
         private readonly List<string> items = new List<string>();
         private int index = -1;
-        private bool hovered;
 
         public event EventHandler SelectedIndexChanged;
 
@@ -251,9 +248,6 @@ namespace PeterLauncher.UI
             Invalidate();
         }
 
-        protected override void OnMouseEnter(EventArgs e) { hovered = true; Invalidate(); base.OnMouseEnter(e); }
-        protected override void OnMouseLeave(EventArgs e) { hovered = false; Invalidate(); base.OnMouseLeave(e); }
-
         protected override void OnClick(EventArgs e)
         {
             base.OnClick(e);
@@ -283,26 +277,25 @@ namespace PeterLauncher.UI
             Rectangle rect = new Rectangle(0, 0, Width - 1, Height - 1);
             using (SolidBrush brush = new SolidBrush(Theme.Field))
                 g.FillRectangle(brush, rect);
-            Theme.DrawSunkenBorder(g, rect);
+            using (Pen pen = new Pen(Theme.Border, 1f))
+                g.DrawRectangle(pen, rect.X, rect.Y, rect.Width, rect.Height);
 
             TextRenderer.DrawText(g, SelectedText, Font, new Rectangle(4, 0, Width - 20, Height),
                 Theme.Text, TextFormatFlags.VerticalCenter | TextFormatFlags.Left | TextFormatFlags.EndEllipsis);
 
-            Rectangle arrow = new Rectangle(Width - 16, 0, 16, Height - 1);
-            using (SolidBrush brush = new SolidBrush(Theme.Background))
-                g.FillRectangle(brush, arrow);
-            Theme.DrawRaisedBorder(g, arrow);
-            int cx = arrow.X + arrow.Width / 2;
-            int cy = arrow.Y + arrow.Height / 2;
-            using (Pen pen = new Pen(Theme.Text, 1.2f))
+            using (Pen pen = new Pen(Theme.Border, 1f))
+                g.DrawLine(pen, Width - 17, 2, Width - 17, Height - 2);
+            int cx = Width - 9;
+            int cy = Height / 2;
+            using (Pen apen = new Pen(Theme.Text, 1.2f))
             {
-                g.DrawLine(pen, cx - 3, cy - 1, cx, cy + 2);
-                g.DrawLine(pen, cx, cy + 2, cx + 3, cy - 1);
+                g.DrawLine(apen, cx - 3, cy - 1, cx, cy + 2);
+                g.DrawLine(apen, cx, cy + 2, cx + 3, cy - 1);
             }
         }
     }
 
-    /// <summary>自绘滑块：经典灰轨道 + 蓝填充。</summary>
+    /// <summary>滑块。</summary>
     public class UiSlider : Control
     {
         private int minimum = 0;
@@ -365,7 +358,8 @@ namespace PeterLauncher.UI
             Rectangle track = new Rectangle(pad, centerY - 2, width, 4);
             using (SolidBrush brush = new SolidBrush(Color.White))
                 g.FillRectangle(brush, track);
-            Theme.DrawSunkenBorder(g, track);
+            using (Pen pen = new Pen(Theme.Border, 1f))
+                g.DrawRectangle(pen, track.X, track.Y, track.Width, track.Height);
 
             double ratio = maximum == minimum ? 0 : (double)(value - minimum) / (maximum - minimum);
             int filled = (int)(width * ratio);
@@ -380,11 +374,12 @@ namespace PeterLauncher.UI
             Rectangle thumb = new Rectangle(thumbX, centerY - 6, 8, 12);
             using (SolidBrush brush = new SolidBrush(Color.White))
                 g.FillRectangle(brush, thumb);
-            Theme.DrawRaisedBorder(g, thumb);
+            using (Pen pen = new Pen(Theme.Border, 1f))
+                g.DrawRectangle(pen, thumb.X, thumb.Y, thumb.Width, thumb.Height);
         }
     }
 
-    /// <summary>Win32 风格复选框：白色方框 + 黑色对勾。</summary>
+    /// <summary>复选框。</summary>
     public class UiCheck : Control
     {
         private bool isChecked;
@@ -418,7 +413,8 @@ namespace PeterLauncher.UI
             Rectangle boxRect = new Rectangle(0, (Height - 13) / 2, 13, 13);
             using (SolidBrush brush = new SolidBrush(Color.White))
                 g.FillRectangle(brush, boxRect);
-            Theme.DrawSunkenBorder(g, boxRect);
+            using (Pen pen = new Pen(Theme.Border, 1f))
+                g.DrawRectangle(pen, boxRect.X, boxRect.Y, boxRect.Width, boxRect.Height);
             if (isChecked)
             {
                 using (Pen pen = new Pen(Color.Black, 1.6f))
@@ -437,7 +433,7 @@ namespace PeterLauncher.UI
         }
     }
 
-    /// <summary>Win32 风格进度条：灰底 + 蓝块。</summary>
+    /// <summary>进度条。</summary>
     public class UiProgress : Control
     {
         private int percent;
@@ -466,7 +462,8 @@ namespace PeterLauncher.UI
             Rectangle bar = new Rectangle(0, Height - 14, Width, 10);
             using (SolidBrush brush = new SolidBrush(Color.White))
                 g.FillRectangle(brush, bar);
-            Theme.DrawSunkenBorder(g, bar);
+            using (Pen pen = new Pen(Theme.Border, 1f))
+                g.DrawRectangle(pen, bar.X, bar.Y, bar.Width, bar.Height);
 
             int filled = (int)(Width * (double)percent / 100.0);
             if (filled > 4)
